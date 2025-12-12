@@ -27,6 +27,15 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    // Profile fields
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private String department;
+    private String position;
+    @Column(length = 2000)
+    private String bio;
+
     @Column(nullable = false)
     private boolean enabled = true;
 
