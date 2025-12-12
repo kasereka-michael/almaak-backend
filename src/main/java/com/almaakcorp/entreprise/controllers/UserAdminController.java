@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,34 @@ public class UserAdminController {
     @GetMapping
     public List<User> list() {
         return userRepository.findAll();
+    }
+
+    // Get current authenticated user's profile
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileResponse> getProfile(Authentication auth) {
+        if (auth == null || auth.getName() == null) return ResponseEntity.status(401).build();
+        Optional<User> opt = userRepository.findByUsername(auth.getName());
+        if (opt.isEmpty()) return ResponseEntity.status(404).build();
+        return ResponseEntity.ok(UserProfileResponse.from(opt.get()));
+    }
+
+    // Update current authenticated user's profile
+    @PutMapping("/profile")
+    public ResponseEntity<UserProfileResponse> updateProfile(Authentication auth, @RequestBody UpdateOwnProfileRequest req) {
+        if (auth == null || auth.getName() == null) return ResponseEntity.status(401).build();
+        Optional<User> opt = userRepository.findByUsername(auth.getName());
+        if (opt.isEmpty()) return ResponseEntity.status(404).build();
+        User user = opt.get();
+        if (req.getFirstName() != null) user.setFirstName(req.getFirstName());
+        if (req.getLastName() != null) user.setLastName(req.getLastName());
+        if (req.getEmail() != null && !req.getEmail().isBlank()) user.setEmail(req.getEmail());
+        if (req.getUsername() != null && !req.getUsername().isBlank()) user.setUsername(req.getUsername());
+        if (req.getPhone() != null) user.setPhone(req.getPhone());
+        if (req.getDepartment() != null) user.setDepartment(req.getDepartment());
+        if (req.getPosition() != null) user.setPosition(req.getPosition());
+        if (req.getBio() != null) user.setBio(req.getBio());
+        User saved = userRepository.save(user);
+        return ResponseEntity.ok(UserProfileResponse.from(saved));
     }
 
     @PostMapping
@@ -107,6 +136,12 @@ public class UserAdminController {
         return ResponseEntity.noContent().build();
     }
 
+    // Optional helper: get user by id
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getById(@PathVariable Long id) {
+        return userRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
     @Data
     public static class CreateUserRequest {
         private String username;
@@ -124,5 +159,48 @@ public class UserAdminController {
         private Boolean accountNonLocked;
         private Boolean credentialsNonExpired;
         private List<String> roles;
+    }
+
+    @Data
+    public static class UpdateOwnProfileRequest {
+        private String firstName;
+        private String lastName;
+        private String email;
+        private String username;
+        private String phone;
+        private String department;
+        private String position;
+        private String bio;
+    }
+
+    @Data
+    public static class UserProfileResponse {
+        private Long id;
+        private String username;
+        private String email;
+        private String firstName;
+        private String lastName;
+        private String phone;
+        private String department;
+        private String position;
+        private String bio;
+        private List<String> roles;
+
+        public static UserProfileResponse from(User u) {
+            UserProfileResponse r = new UserProfileResponse();
+            r.id = u.getId();
+            r.username = u.getUsername();
+            r.email = u.getEmail();
+            r.firstName = u.getFirstName();
+            r.lastName = u.getLastName();
+            r.phone = u.getPhone();
+            r.department = u.getDepartment();
+            r.position = u.getPosition();
+            r.bio = u.getBio();
+            r.roles = u.getRoles().stream().map(Role::getName)
+                    .map(name -> name.startsWith("ROLE_") ? name.substring(5) : name)
+                    .toList();
+            return r;
+        }
     }
 }
