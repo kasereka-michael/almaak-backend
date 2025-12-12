@@ -126,15 +126,6 @@
 			<scope>runtime</scope>
 		</dependency>
 
-
-		
-		<!-- JWT Dependencies -->
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt</artifactId>
-			<version>0.9.1</version>
-		</dependency>
-
 		<!-- iText PDF for PDF generation -->
 		<dependency>
 			<groupId>com.itextpdf</groupId>
