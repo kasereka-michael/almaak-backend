@@ -79,6 +79,19 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- PostgreSQL Database Driver -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Flyway for DB migrations (optional but recommended) -->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+
 		<!-- Jackson JSON Processing -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
