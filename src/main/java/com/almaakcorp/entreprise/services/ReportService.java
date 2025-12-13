@@ -10,4 +10,5 @@ public interface ReportService {
     Map<String, Object> getPOsPaidSummary(LocalDate start, LocalDate end);
     Map<String, Object> getRevenue(LocalDate start, LocalDate end);
     Map<String, Object> getExpenses(LocalDate start, LocalDate end);
+    Map<String, Object> getQuotations(LocalDate start, LocalDate end);
 }

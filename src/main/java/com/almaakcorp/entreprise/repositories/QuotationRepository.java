@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface QuotationRepository extends JpaRepository <Quotations, Long> , JpaSpecificationExecutor<Quotations> {
     Quotations findFirstByOrderByQuotationIdDesc();
 
+    java.util.List<Quotations> findByCreatedAtBetween(java.time.LocalDate start, java.time.LocalDate end);
+
     Quotations findByQuotationId(String quotationId);
 
     @Query("SELECT q FROM Quotations q LEFT JOIN FETCH q.quotationItems qi LEFT JOIN FETCH qi.product WHERE q.quotationId = ?1")

@@ -56,4 +56,12 @@ public class ReportController {
     ) {
         return reportService.getExpenses(start, end);
     }
+
+    @GetMapping("/quotations")
+    public Map<String, Object> quotations(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end
+    ) {
+        return reportService.getQuotations(start, end);
+    }
 }

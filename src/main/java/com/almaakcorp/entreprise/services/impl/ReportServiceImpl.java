@@ -3,6 +3,7 @@ package com.almaakcorp.entreprise.services.impl;
 import com.almaakcorp.entreprise.repositories.POExpenseRepository;
 import com.almaakcorp.entreprise.repositories.PORepository;
 import com.almaakcorp.entreprise.repositories.QuotationItemRepository;
+import com.almaakcorp.entreprise.repositories.QuotationRepository;
 import com.almaakcorp.entreprise.services.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class ReportServiceImpl implements ReportService {
 
     private final QuotationItemRepository quotationItemRepository;
+    private final QuotationRepository quotationRepository;
     private final PORepository poRepository;
     private final POExpenseRepository poExpenseRepository;
 
@@ -92,6 +94,33 @@ public class ReportServiceImpl implements ReportService {
         }
         Map<String,Object> res = new HashMap<>();
         res.put("totalExpenses", exp != null ? exp : BigDecimal.ZERO);
+        return res;
+    }
+
+    @Override
+    public Map<String, Object> getQuotations(LocalDate start, LocalDate end) {
+        var quotes = quotationRepository.findByCreatedAtBetween(start, end);
+        var list = quotes.stream().map(q -> {
+            Map<String,Object> m = new HashMap<>();
+            m.put("id", q.getId());
+            m.put("quotationId", q.getQuotationId());
+            m.put("customerName", q.getCustomerName());
+            m.put("status", q.getStatus() != null ? q.getStatus().toString() : null);
+            m.put("totalAmount", q.getTotalAmount());
+            m.put("createdAt", q.getCreatedAt());
+            return m;
+        }).collect(java.util.stream.Collectors.toList());
+        BigDecimal total = list.stream()
+                .map(m -> {
+                    Object v = m.get("totalAmount");
+                    try { return new BigDecimal(String.valueOf(v == null ? 0 : v)); } catch (Exception e) { return BigDecimal.ZERO; }
+                })
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        Map<String,Object> res = new HashMap<>();
+        res.put("list", list);
+        Map<String,Object> totals = new HashMap<>();
+        totals.put("amount", total);
+        res.put("totals", totals);
         return res;
     }
 }
