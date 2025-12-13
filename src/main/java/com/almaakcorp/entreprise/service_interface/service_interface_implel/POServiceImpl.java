@@ -41,6 +41,25 @@ public class POServiceImpl implements POService {
         this.quotationRepository = quotationRepository;
     }
 
+    @Override
+    public long countAll() { return poRepository.count(); }
+
+    @Override
+    public long countPaid() { return poRepository.countByPaidIsTrue(); }
+
+    @Override
+    public java.math.BigDecimal sumIncome() {
+        java.math.BigDecimal sum = poRepository.sumTotalAmount();
+        return sum != null ? sum : java.math.BigDecimal.ZERO;
+    }
+
+    @Override
+    public java.math.BigDecimal sumExpenses() {
+        return expenseRepository.findAll().stream()
+                .map(e -> e.getAmount() != null ? e.getAmount() : java.math.BigDecimal.ZERO)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+    }
+
     // Removed auto-generation: PO number must be provided by user
 
     private PODTO mapToDTO(PO po) {

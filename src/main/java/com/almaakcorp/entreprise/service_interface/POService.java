@@ -12,6 +12,12 @@ public interface POService {
     PODTO getPO(Long id);
     List<PODTO> listPOs(int pageNo, int pageSize, String search);
 
+    // Aggregates for dashboard
+    long countAll();
+    long countPaid();
+    java.math.BigDecimal sumIncome();
+    java.math.BigDecimal sumExpenses();
+
     // File operations
     String uploadPOFile(Long id, MultipartFile file) throws Exception;
     byte[] getPOFile(Long id) throws Exception;

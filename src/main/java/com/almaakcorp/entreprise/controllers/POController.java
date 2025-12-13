@@ -20,6 +20,24 @@ public class POController {
 // api/po/v1/save.
     private final POService poService;
 
+    @GetMapping("/count")
+    public long count(@RequestParam(value = "paid", required = false) Boolean paid) {
+        if (paid != null && paid) {
+            return poService.countPaid();
+        }
+        return poService.countAll();
+    }
+
+    @GetMapping("/income/total")
+    public java.math.BigDecimal totalIncome() {
+        return poService.sumIncome();
+    }
+
+    @GetMapping("/expenses/total")
+    public java.math.BigDecimal totalExpenses() {
+        return poService.sumExpenses();
+    }
+
 
     @PostMapping(value = "/save", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public PODTO create(@RequestPart("po") PODTO dto, @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {

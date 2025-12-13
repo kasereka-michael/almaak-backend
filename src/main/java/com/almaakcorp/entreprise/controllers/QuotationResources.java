@@ -25,6 +25,19 @@ public class QuotationResources {
 
     private final QuotationImplement quotationImplementation;
 
+    @GetMapping("/count")
+    public ResponseEntity<Long> countQuotations() {
+        try {
+            long count = quotationImplementation.getAllQuotations() != null
+                    ? quotationImplementation.getAllQuotations().size()
+                    : 0L;
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            log.error("Error counting quotations", e);
+            return ResponseEntity.ok(0L);
+        }
+    }
+
     /**
      * Creates a new quotation
      *
