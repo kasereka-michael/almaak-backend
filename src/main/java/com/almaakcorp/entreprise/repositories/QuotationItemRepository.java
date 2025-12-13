@@ -13,20 +13,18 @@ public interface QuotationItemRepository extends JpaRepository<com.almaakcorp.en
 
     interface TopQuotedRow {
         Long getProductId();
-        String getProductName();
         Long getTimesQuoted();
         Long getTotalQty();
     }
 
     @Query("""
         select qi.product.id as productId,
-               qi.product.name as productName,
                count(qi.id) as timesQuoted,
                coalesce(sum(qi.quantity),0) as totalQty
         from QuotationItem qi
         join qi.quotation q
         where (q.createdAt between :start and :end)
-        group by qi.product.id, qi.product.name
+        group by qi.product.id
         order by timesQuoted desc
         """)
     List<TopQuotedRow> findTopQuotedBetween(@Param("start") LocalDate start,

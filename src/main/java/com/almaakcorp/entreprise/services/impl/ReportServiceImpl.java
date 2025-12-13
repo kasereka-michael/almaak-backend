@@ -4,6 +4,7 @@ import com.almaakcorp.entreprise.repositories.POExpenseRepository;
 import com.almaakcorp.entreprise.repositories.PORepository;
 import com.almaakcorp.entreprise.repositories.QuotationItemRepository;
 import com.almaakcorp.entreprise.repositories.QuotationRepository;
+import com.almaakcorp.entreprise.repositories.ProductRepository;
 import com.almaakcorp.entreprise.services.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class ReportServiceImpl implements ReportService {
 
     private final QuotationItemRepository quotationItemRepository;
     private final QuotationRepository quotationRepository;
+    private final ProductRepository productRepository;
     private final PORepository poRepository;
     private final POExpenseRepository poExpenseRepository;
 
@@ -35,7 +37,14 @@ public class ReportServiceImpl implements ReportService {
         return rows.stream().limit(Math.max(1, limit)).map(r -> {
             Map<String,Object> m = new HashMap<>();
             m.put("productId", r.getProductId());
-            m.put("productName", r.getProductName());
+            String productName = productRepository.findById(r.getProductId())
+                    .map(p -> {
+                        if (p.getProductName() != null && !p.getProductName().isBlank()) return p.getProductName();
+                        if (p.getProductPartNumber() != null && !p.getProductPartNumber().isBlank()) return p.getProductPartNumber();
+                        return "Product #" + p.getProductId();
+                    })
+                    .orElse("Product #" + r.getProductId());
+            m.put("productName", productName);
             m.put("timesQuoted", r.getTimesQuoted());
             m.put("totalQuotedQty", r.getTotalQty());
             return m;
