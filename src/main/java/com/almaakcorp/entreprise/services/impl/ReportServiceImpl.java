@@ -31,8 +31,8 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<Map<String, Object>> getTopQuotedProducts(LocalDate start, LocalDate end, int limit) {
-        var rows = quotationItemRepository.findTopQuotedBetween(start, end, limit);
-        return rows.stream().map(r -> {
+        var rows = quotationItemRepository.findTopQuotedBetween(start, end);
+        return rows.stream().limit(Math.max(1, limit)).map(r -> {
             Map<String,Object> m = new HashMap<>();
             m.put("productId", r.getProductId());
             m.put("productName", r.getProductName());

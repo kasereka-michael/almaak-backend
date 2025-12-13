@@ -30,6 +30,5 @@ public interface QuotationItemRepository extends JpaRepository<com.almaakcorp.en
         order by timesQuoted desc
         """)
     List<TopQuotedRow> findTopQuotedBetween(@Param("start") LocalDate start,
-                                            @Param("end") LocalDate end,
-                                            @Param("limit") int limit);
+                                            @Param("end") LocalDate end);
 }
