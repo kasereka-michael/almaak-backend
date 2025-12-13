@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface POExpenseRepository extends JpaRepository<POExpense, Long> {
     List<POExpense> findByPo(PO po);
+
+    @org.springframework.data.jpa.repository.Query("select coalesce(sum(e.amount),0) from POExpense e where e.createdAt between :start and :end")
+    java.math.BigDecimal sumAmountByCreatedAtBetween(@org.springframework.data.repository.query.Param("start") java.time.Instant start,
+                                                     @org.springframework.data.repository.query.Param("end") java.time.Instant end);
 }
