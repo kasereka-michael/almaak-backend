@@ -97,7 +97,7 @@ public class ReportServiceImpl implements ReportService {
         Instant s = startOfDay(start); Instant e = endOfDay(end);
         BigDecimal exp;
         try {
-            exp = poExpenseRepository.sumAmountByCreatedAtBetween(s, e);
+            exp = poExpenseRepository.sumAmountByPoReceivedAtBetween(s, e);
         } catch (Exception ignored) {
             exp = null;
         }
