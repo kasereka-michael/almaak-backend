@@ -86,12 +86,7 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Flyway for DB migrations (optional but recommended) -->
-		<dependency>
-			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-core</artifactId>
-		</dependency>
-
+		
 		<!-- Jackson JSON Processing -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -161,16 +156,8 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-	<dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-core</artifactId>
-      <version>9.22.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-mysql</artifactId>
-      <version>9.22.3</version>
-    </dependency>
+	    </dependency>
+        </dependency>
   </dependencies>
 
 	<build>
