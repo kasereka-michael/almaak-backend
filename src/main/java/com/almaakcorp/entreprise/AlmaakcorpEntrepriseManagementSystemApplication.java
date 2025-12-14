@@ -10,8 +10,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableJpaAuditing
-@EntityScan(basePackages = "com.almaakcorp.entreprise.models")
-@EnableJpaRepositories(basePackages = "com.almaakcorp.entreprise.repositories")
+@EntityScan(basePackages = {
+		"com.almaakcorp.entreprise.models",
+		"com.almaakcorp.entreprise.audit"
+})
+@EnableJpaRepositories(basePackages = {
+		"com.almaakcorp.entreprise.repositories",
+		"com.almaakcorp.entreprise.audit"
+})
 public class AlmaakcorpEntrepriseManagementSystemApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AlmaakcorpEntrepriseManagementSystemApplication.class, args);
