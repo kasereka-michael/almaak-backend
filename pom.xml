@@ -156,6 +156,11 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+	<!-- Spring AOP for @Aspect -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
