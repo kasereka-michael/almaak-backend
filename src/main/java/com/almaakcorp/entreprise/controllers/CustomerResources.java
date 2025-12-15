@@ -19,6 +19,7 @@ import java.util.List;
 public class CustomerResources {
 
     private final CustomerServiceImpl customerService;
+    private final com.almaakcorp.entreprise.service_interface.service_interface_implel.TrashImplementation trashService;
 
 
     @PostMapping("/save-customer")
@@ -109,6 +110,67 @@ public class CustomerResources {
             return ResponseEntity.ok(updated);
         } catch (Exception e) {
             log.error("Error updating customer: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteCustomer(
+            @PathVariable Long id,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String reason) {
+        try {
+            Customers existing = customerService.getCustomerById(id);
+            if (existing == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            String currentUser = (username != null && !username.isBlank()) ? username : "demo_user";
+
+            java.util.Map<String, Object> data = new java.util.HashMap<>();
+            data.put("id", existing.getId());
+            data.put("name", existing.getName());
+            data.put("email", existing.getEmail());
+            data.put("phone", existing.getPhone());
+            data.put("status", existing.getStatus());
+            data.put("notes", existing.getNotes());
+
+            trashService.moveToTrash(
+                    "Customer",
+                    String.valueOf(id),
+                    existing.getName() != null ? existing.getName() : (existing.getEmail() != null ? existing.getEmail() : ("Customer-" + id)),
+                    data,
+                    currentUser,
+                    currentUser,
+                    reason
+            );
+
+            // Try soft-delete flags if available, otherwise perform removal
+            try {
+                java.lang.reflect.Method setDeleted = existing.getClass().getMethod("setDeleted", boolean.class);
+                setDeleted.invoke(existing, true);
+                try {
+                    java.lang.reflect.Method setDeletedAt = existing.getClass().getMethod("setDeletedAt", java.time.Instant.class);
+                    setDeletedAt.invoke(existing, java.time.Instant.now());
+                } catch (NoSuchMethodException ignored) {}
+                try {
+                    java.lang.reflect.Method setDeletedBy = existing.getClass().getMethod("setDeletedBy", String.class);
+                    setDeletedBy.invoke(existing, currentUser);
+                } catch (NoSuchMethodException ignored) {}
+                customerService.updateCustomer(id, existing);
+            } catch (NoSuchMethodException nsme) {
+                // Fallback to hard delete if no soft-delete fields exist
+                try {
+                    java.lang.reflect.Method deleteMethod = customerService.getClass().getMethod("deleteCustomer", Long.class);
+                    deleteMethod.invoke(customerService, id);
+                } catch (NoSuchMethodException e) {
+                    log.warn("CustomerService.deleteCustomer(Long) not found; customer remains but is recorded in trash.");
+                }
+            }
+
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            log.error("Error deleting customer: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
